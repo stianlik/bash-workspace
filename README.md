@@ -5,10 +5,11 @@ bash-workspace
 Overview
 --------
 
-This script implements workspaces for bash. The idea is to create one workspace
-per project (or context), and store a bunch of shortcuts to relevant folders in 
-each workspace. In other words, bash-workspace makes it easy to navigate 
-the filesystem using context sensitive folder shortcuts.
+bash-workspace makes it easy to navigate the filesystem using context sensitive shortcuts.
+
+This script implements workspaces for the terminal. The idea is to create one workspace per 
+project (or context), and store a bunch of shortcuts to relevant folders in each workspace so 
+that you quickly can jump from place to place.
 
 Workspaces, including all shortcuts are stored in `~/.workspace/log/<workspace-name>`.
 This let you access your workspaces between sessions (in multiple terminals, etc.).
@@ -27,14 +28,14 @@ With bash-workspace you can
 Installation
 ------------
 
-If you use the directory ~/.workspace for something, open workspace.sh and 
-change `workspace_dir=...` to something else.
+1. If you use the directory `~/.workspace` for something, open workspace.sh and 
+   change `workspace_dir=...` to something else.
 
-Create an alias for this script (using "source" so that it's allowed to change directories):
+2. Create an alias for this script (using "source" so that it's allowed to change directories):
 
-    alias w='source /path/to/workspace.sh'
+        alias w='source /path/to/workspace.sh'
 
-Add the preceding line to ~/.bashrc to make it permanent.
+3. Add the preceding line to ~/.bashrc to make it permanent.
 
 Usage
 -----
