@@ -102,5 +102,5 @@ Usage
 
         w                 # lists all workspaces
         w use awesome     # Use the awesome project 
-                          # (links still stored under ~/.workspace/log/awesome)
+                          # (links still stored under ~/.bash-workspace/log/awesome)
         w cd main         # Go to main
