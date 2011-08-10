@@ -16,8 +16,8 @@ This let you access your workspaces between sessions (in multiple terminals, etc
 
 With bash-workspace you can
 
-- Activate a workspace using `w use <workspace_name>` (it will be created if id doesn't already exist)
-- Add a named shortcut to the active workspace, pointint at the hurrent directory using `w add <name>`
+- Change workspace using `w cw <workspace_name>` (it will be created if id doesn't already exist)
+- Add a named shortcut to the active workspace, pointint at the hurrent directory using `w ln <name>`
 - List all shortcuts for the active workspace using `w list`
 - List all stored workspaces using `w`
 - Use shortcuts to navigate between folders using `w cd <name>`
@@ -56,7 +56,7 @@ Usage
 
 1. Create, and activate a new workspace named awesome
 
-        w use awesome
+        w cw awesome
 
 2. Move into the project folder
 
@@ -64,12 +64,12 @@ Usage
 
 3. Add a link to the current directory and name it "r"
 
-        w add r 
+        w ln r 
 
 4. Move into the test folder, and add a link named "test"
 
         cd test/src
-        w add test
+        w ln test
 
 5. Do some work in the test folder (writing unit tests?)
 
@@ -80,7 +80,7 @@ Usage
 7. Move into the main folder, and add a link named "main"
 
         cd main/src
-        w add test
+        w ln test
 
 9. Do some work (make the tests run?)
 
@@ -92,7 +92,7 @@ Usage
 
 12. Start working on another project (conveniently named project2)
 
-        w use project2
+        w cw project2
         w ls      # List all links for the current project
         w clear   # Remove all links from the current project
         # do some work, add some links, remove some, decide to scrap the project ...
@@ -101,6 +101,6 @@ Usage
 10. Logout, go to sleep, login again and start working on the awesome project
 
         w                 # lists all workspaces
-        w use awesome     # Use the awesome project 
+        w cw awesome     # Use the awesome project 
                           # (links still stored under ~/.bash-workspace/log/awesome)
         w cd main         # Go to main
