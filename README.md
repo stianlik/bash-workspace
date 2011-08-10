@@ -14,6 +14,7 @@ Workspaces, including all shortcuts are stored in `~/.workspace/log/<workspace-n
 This let you access your workspaces between sessions (in multiple terminals, etc.).
 
 With bash-workspace you can
+
 - Activate a workspace using `w use <workspace_name>` (it will be created if id doesn't already exist)
 - Add a named shortcut to the active workspace, pointint at the hurrent directory using `w add <name>`
 - List all shortcuts for the active workspace using `w list`
