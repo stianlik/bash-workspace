@@ -4,7 +4,7 @@
 # Created: 2011-08-10
 #
 
-workspace_dir=~/.workspace
+workspace_dir=~/.bash-workspace
 
 mkdir $workspace_dir > /dev/null 2>&1
 mkdir $workspace_dir/log> /dev/null 2>&1
@@ -18,14 +18,15 @@ if [ -z "$workspace_log" ]; then
 fi;
 
 workspace_helptext() {
-    echo "Usage: workspace                          List workspaces"
-    echo "   or: workspace use <workspace_name>     Change workspace"
-    echo "   or: workspace add <name>               Add current directory to workspace"
-    echo "   or: workspace rm [<name>]              Remove directory from workspace, or remove entire workspace if <name> is omitted"
-    echo "   or: workspace clear                    Clear current workspace (removing all links)"
-    echo "   or: workspace cd <name>                Change directory"
-    echo "   or: workspace ls                       List all directories in workspace"
-    echo "   or: workspace help                     Display this.."
+    echo "Assuming w is an alias for \"source /path/to/workspace.sh\""
+    echo "Usage: w                       List workspaces"
+    echo "   or: w use <workspace_name>  Change workspace"
+    echo "   or: w add <name>            Add current directory to workspace"
+    echo "   or: w rm [<name>]           Remove directory from workspace, or remove entire workspace if <name> is omitted"
+    echo "   or: w clear                 Clear current workspace (removing all links)"
+    echo "   or: w cd <name>             Change directory"
+    echo "   or: w ls                    List all directories in workspace"
+    echo "   or: w help                  Display this.."
 }
 
 workspace_load() {

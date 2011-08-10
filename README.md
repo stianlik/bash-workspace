@@ -11,7 +11,7 @@ This script implements workspaces for the terminal. The idea is to create one wo
 project (or context), and store a bunch of shortcuts to relevant folders in each workspace so 
 that you quickly can jump from place to place.
 
-Workspaces, including all shortcuts are stored in `~/.workspace/log/<workspace-name>`.
+Workspaces, including all shortcuts are stored in `~/.bash-workspace/log/<workspace-name>`.
 This let you access your workspaces between sessions (in multiple terminals, etc.).
 
 With bash-workspace you can
@@ -21,14 +21,14 @@ With bash-workspace you can
 - List all shortcuts for the active workspace using `w list`
 - List all stored workspaces using `w`
 - Use shortcuts to navigate between folders using `w cd <name>`
-- Remove a shortcut from the active workspace using `w remove <name>`
+- Remove a shortcut from the active workspace using `w rm <name>`
 - Clear the current workspace (i.e. delete all shortcuts for this workspace) using `w clear`
-- Remove the current workspace using `w remove`
+- Remove the current workspace using `w rm`
 
 Installation
 ------------
 
-1. If you use the directory `~/.workspace` for something, open workspace.sh and 
+1. If you use the directory `~/.bash-workspace` for something, open workspace.sh and 
    change `workspace_dir=...` to something else.
 
 2. Create an alias for this script (using "source" so that it's allowed to change directories):
@@ -96,7 +96,7 @@ Usage
         w ls      # List all links for the current project
         w clear   # Remove all links from the current project
         # do some work, add some links, remove some, decide to scrap the project ...
-        w remove  # Remove the current project
+        w rm      # Remove the current project
 
 10. Logout, go to sleep, login again and start working on the awesome project
 
