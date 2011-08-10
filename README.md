@@ -2,6 +2,27 @@
 bash-workspace
 ==============
 
+Overview
+--------
+
+This script implements workspaces for bash. The idea is to create one workspace
+per project (or context), and store a bunch of shortcuts to relevant folders in 
+each workspace. In other words, bash-workspace makes it easy to navigate 
+the filesystem using context sensitive folder shortcuts.
+
+Workspaces, including all shortcuts are stored in `~/.workspace/log/<workspace-name>`.
+This let you access your workspaces between sessions (in multiple terminals, etc.).
+
+With bash-workspace you can
+- Activate a workspace using `w use <workspace_name>` (it will be created if id doesn't already exist)
+- Add a named shortcut to the active workspace, pointint at the hurrent directory using `w add <name>`
+- List all shortcuts for the active workspace using `w list`
+- List all stored workspaces using `w`
+- Use shortcuts to navigate between folders using `w cd <name>`
+- Remove a shortcut from the active workspace using `w remove <name>`
+- Clear the current workspace (i.e. delete all shortcuts for this workspace) using `w clear`
+- Remove the current workspace using `w remove`
+
 Installation
 ------------
 
@@ -17,8 +38,9 @@ Add the preceding line to ~/.bashrc to make it permanent.
 Usage
 -----
 
-### Get a list of all available commands (assuming you defined an alias as in step 2)
-        w help
+### Get a list of available options (assuming you defined an alias as in step 2)
+
+    w help
 
 ### Example: Working on a project named awesome
 
@@ -50,6 +72,7 @@ Usage
 5. Do some work in the test folder (writing unit tests?)
 
 6. Go back to the root directory
+
         w cd r        
 
 7. Move into the main folder, and add a link named "main"
