@@ -22,8 +22,9 @@ With bash-workspace you can
 - List all stored workspaces using `w`
 - Use shortcuts to navigate between folders using `w cd <name>`
 - Remove a shortcut from the active workspace using `w rm <name>`
-- Clear the current workspace (i.e. delete all shortcuts for this workspace) using `w clear`
+- Clear the current workspace (i.e. delete all shortcuts for this workspace) using `w empty`
 - Remove the current workspace using `w rm`
+- Remove all workspaces and shortcuts with `w reset`
 
 Installation
 ------------
@@ -94,7 +95,7 @@ Usage
 
         w cw project2
         w ls      # List all links for the current project
-        w clear   # Remove all links from the current project
+        w empty   # Remove all links from the current project
         # do some work, add some links, remove some, decide to scrap the project ...
         w rm      # Remove the current project
 
