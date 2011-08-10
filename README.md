@@ -16,18 +16,18 @@ Add the preceding line to ~/.bashrc to make it permanent.
 Usage
 -----
 
-## Get a list of all available commands (assuming you defined an alias as in step 2)
+### Get a list of all available commands (assuming you defined an alias as in step 2)
     w help
 
-## Example: Working on a project named awesome
+### Example: Working on a project named awesome
 
-### File structure:
+#### File structure:
 
 - Root folder: ~/project/awesome
 - Test folder: ~/project/awesome/test/src
 - Main folder: ~/project/awesome/main/src
 
-### Use case: Working in two directories, main and test
+#### Use case: Working in two directories, main and test
 
 1. Create, and activate a new workspace named awesome
 
