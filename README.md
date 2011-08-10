@@ -5,7 +5,8 @@ bash-workspace
 Installation
 ------------
 
-If you use the directory ~/.workspace for something, change workspace\_dir=.. to something else.
+If you use the directory ~/.workspace for something, open workspace.sh and 
+change `workspace_dir=...` to something else.
 
 Create an alias for this script (using "source" so that it's allowed to change directories):
 
@@ -31,7 +32,7 @@ Usage
 
 1. Create, and activate a new workspace named awesome
 
-    w use awesome
+        w use awesome
 
 2. Move into the project folder
 
