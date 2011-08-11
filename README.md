@@ -43,7 +43,7 @@ Auto-complete will suggest the current directory name
 
     w cd
 
-## Move to linked folder
+### Move to linked folder
 
 Auto-complete will suggest links added using `w ln`
     
