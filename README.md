@@ -76,7 +76,7 @@ Auto-complete will suggest links added using `bws ln`
 
 ### List all stored workspaces 
 
-    w
+    bws
 
 ### Get help
 
