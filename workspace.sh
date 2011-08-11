@@ -191,7 +191,7 @@ _bws_autocomplete() {
     if [ $COMP_CWORD -eq 1 ]; then
         suggestions="`_bws_list_commands`"
     elif [ $COMP_CWORD -eq 2 ]; then
-        if [ "$cmd" == "cd" ] || [ "$cmd" == "rm" ]; then
+        if [ "$cmd" == "cd" ] || [ "$cmd" == "rm" ] || [ "$cmd" == "lookup" ]; then
             suggestions="`_bws_list_link_names`"
         elif [ "$cmd" == "cw" ]; then
             suggestions="`ls $_BWS_DIR/log` `_bws_escape_current_basename`"
