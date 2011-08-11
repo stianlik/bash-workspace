@@ -14,94 +14,67 @@ that you quickly can jump from place to place.
 Workspaces, including all shortcuts are stored in `~/.bash-workspace/log/<workspace-name>`.
 This let you access your workspaces between sessions (in multiple terminals, etc.).
 
-With bash-workspace you can
-
-- Change workspace using `w cw <workspace_name>` (it will be created if id doesn't already exist)
-- Add a named shortcut to the active workspace, pointint at the hurrent directory using `w ln <name>`
-- List all shortcuts for the active workspace using `w list`
-- List all stored workspaces using `w`
-- Use shortcuts to navigate between folders using `w cd <name>`
-- Remove a shortcut from the active workspace using `w rm <name>`
-- Clear the current workspace (i.e. delete all shortcuts for this workspace) using `w empty`
-- Remove the current workspace using `w rm`
-- Remove all workspaces and shortcuts with `w reset`
-
 Installation
 ------------
 
-1. If you use the directory `~/.bash-workspace` for something, open workspace.sh and 
-   change `workspace_dir=...` to something else.
-
-2. Create an alias for this script (using "source" so that it's allowed to change directories):
-
-        alias w='source /path/to/workspace.sh'
-
-3. Add the preceding line to ~/.bashrc to make it permanent.
+Add the following to ~/.bashrc
+    alias w='source /home/stianlik/Prosjekter/bash-workspace/workspace.sh'
+    w autocomplete # If you chose another alias, run <another_alias> autocomplete <another_alias>
 
 Usage
 -----
 
-### Get a list of available options (assuming you defined an alias as in step 2)
+If you type `w `, auto-complete will suggest all available commands.
+
+## Change workspace (it will be created if id doesn't already exist)
+
+Auto-complete will suggest available workspaces, including the 
+current directory name
+
+    w cw my_workspace
+
+## Add link to current directory
+
+Auto-complete will suggest the current directory name
+
+    w ln some_link_name
+
+## Move to workspace root
+
+    w cd
+
+## Move to linked folder
+
+Auto-complete will suggest links added using `w ln`
+    
+    w cd some_link_name
+
+## Remove a shortcut from the active workspace 
+
+Auto-complete will suggest links added using `w ln`
+    
+    w rm <name>
+
+## Clear the current workspace (i.e. delete all shortcuts for this workspace) 
+    
+    w empty
+
+## Remove the current workspace 
+    
+    w rm
+
+## Remove all workspaces and shortcuts 
+
+    w reset
+
+## List all shortcuts for the active workspace 
+
+    w list
+
+## List all stored workspaces 
+
+    w
+
+## Get help
 
     w help
-
-### Example: Working on a project named awesome
-
-#### File structure:
-
-- Root folder: ~/project/awesome
-- Test folder: ~/project/awesome/test/src
-- Main folder: ~/project/awesome/main/src
-
-#### Use case: Working in two directories, main and test
-
-1. Create, and activate a new workspace named awesome
-
-        w cw awesome
-
-2. Move into the project folder
-
-        cd ~/projects/awesome
-
-3. Add a link to the current directory and name it "r"
-
-        w ln r 
-
-4. Move into the test folder, and add a link named "test"
-
-        cd test/src
-        w ln test
-
-5. Do some work in the test folder (writing unit tests?)
-
-6. Go back to the root directory
-
-        w cd r        
-
-7. Move into the main folder, and add a link named "main"
-
-        cd main/src
-        w ln test
-
-9. Do some work (make the tests run?)
-
-10. Go back to the test directory
-
-        w cd test
-
-11. Make more tests, and get bored
-
-12. Start working on another project (conveniently named project2)
-
-        w cw project2
-        w ls      # List all links for the current project
-        w empty   # Remove all links from the current project
-        # do some work, add some links, remove some, decide to scrap the project ...
-        w rm      # Remove the current project
-
-10. Logout, go to sleep, login again and start working on the awesome project
-
-        w                 # lists all workspaces
-        w cw awesome     # Use the awesome project 
-                          # (links still stored under ~/.bash-workspace/log/awesome)
-        w cd main         # Go to main

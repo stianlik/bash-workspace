@@ -21,6 +21,7 @@ workspace_load() {
     unset ${!workspace_link_*}
     source $workspace_dir/log/$workspace_active 2> /dev/null
     if [ $? == 1 ]; then
+        workspace_add_link r "`pwd`"
         workspace_save
     fi
 }
@@ -76,11 +77,23 @@ workspace_remove_all() {
     workspace_save
 }
 
+workspace_escape() {
+# Replace illegal characters with underline
+# @param Link name
+    echo $1 | sed -e s/[^a-z0-9_]/_/gi
+}
+
+workspace_escape_current_basename() {
+    local tmp="`pwd`"
+    tmp="`basename "$tmp"`"
+    workspace_escape "$tmp"
+}
+
 workspace_add_link() {
 # Add link to active workspace
 # @param Link name
 # @param Target directory
-    local workspace_cmd="export workspace_link_$1='$2'"
+    workspace_cmd="export workspace_link_$1='$2'"
     eval $workspace_cmd
     workspace_save
 }
@@ -115,6 +128,12 @@ workspace_list() {
             echo -n -e "$ws "
         fi;
     done;
+    echo
+}
+
+workspace_list_link_names() {
+# List links in current workspace
+    export -p | grep workspace_link_ | sed -e 's/.*\?workspace_link_//g' -e 's/=.*//g' | tr "\n" " "
     echo
 }
 
@@ -175,17 +194,42 @@ workspace_empty_active_confirm() {
     workspace_empty_active
 }
 
+workspace_list_commands() {
+    echo "cd cw empty help ln ls reset rm"
+}
+
 workspace_helptext() {
     echo "Assuming w is an alias for \"source /path/to/workspace.sh\""
     echo "Usage: w                       List workspaces"
+    echo "   or: w cd [<name>]           Change directory, if <name> is omitted, go to \"r\" (workspace root)"
     echo "   or: w cw [<workspace_name>] Change workspace, if <workspace_name> is omitted, default workspace is activated"
-    echo "   or: w ln <name>             Add link to current directory in active workspace"
-    echo "   or: w rm [<name>]           Remove directory from workspace, or remove entire workspace if <name> is omitted"
     echo "   or: w empty                 Empty active workspace (removing all links)"
-    echo "   or: w reset                 Remove all workspaces"
-    echo "   or: w cd <name>             Change directory"
-    echo "   or: w ls                    List all directories in workspace"
     echo "   or: w help                  Display this.."
+    echo "   or: w ln <name>             Add link to current directory in active workspace"
+    echo "   or: w ls                    List all directories in workspace"
+    echo "   or: w reset                 Remove all workspaces"
+    echo "   or: w rm [<name>]           Remove directory from workspace, or remove entire workspace if <name> is omitted"
+    echo "   or: w start                 Activate workspaces"
+}
+
+workspace_autocomplete() {
+    local cur prev suggestions
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    if [ $COMP_CWORD -eq 1 ]; then
+        suggestions="`w _func list_commands`"
+    elif [ $COMP_CWORD -eq 2 ]; then
+        if [ "$prev" == "cd" ] || [ "$prev" == "rm" ]; then
+            suggestions="`w _func list_link_names`"
+        elif [ "$prev" == "cw" ]; then
+            suggestions="`w _func list` `w _func escape_current_basename`"
+        elif [ "$prev" == "ln" ]; then
+            suggestions="`w _func escape_current_basename`"
+        fi
+    fi
+    COMPREPLY=(`compgen -W "${suggestions}" $cur`)
 }
 
 workspace_run() {
@@ -193,13 +237,13 @@ workspace_run() {
 # @param name
     workspace_init
 
-    local workspace_command=$1
-    local workspace_name=$2
+    local workspace_command="$1"
+    local workspace_name="$2"
 
     # Add
     if [ "$workspace_command" == 'ln' ]; then
         if [ -n "$workspace_name" ]; then
-            workspace_add_link $workspace_name "`pwd`"
+            workspace_add_link `workspace_escape "$workspace_name"` "`pwd`"
         else
             workspace_helptext
         fi
@@ -207,7 +251,7 @@ workspace_run() {
     # Remove
     elif [ "$workspace_command" == 'rm' ]; then
         if [ -n "$workspace_name" ]; then
-            workspace_remove_link $workspace_name
+            workspace_remove_link `workspace_escape "$workspace_name"`
         else
             workspace_remove_confirm
         fi
@@ -215,22 +259,22 @@ workspace_run() {
     # Change directory
     elif [ "$workspace_command" == 'cd' ]; then
         if [ -n "$workspace_name" ]; then
-            workspace_change_directory_confirm $workspace_name
+            workspace_change_directory_confirm `workspace_escape "$workspace_name"`
         else
-            workspace_helptext
+            workspace_change_directory_confirm r # Workspace root dir
         fi
 
     # Change workspace
     elif [ "$workspace_command" == 'cw' ]; then
         if [ -n "$workspace_name" ]; then
-            workspace_change $workspace_name
+            workspace_change `workspace_escape "$workspace_name"`
         else
             workspace_change default
         fi
 
     # Reset (remove all workspaces)
     elif [ "$workspace_command" == 'reset' ]; then
-        workspace_remove_all_confirm $workspace_name
+        workspace_remove_all_confirm `workspace_escape "$workspace_name"`
 
     # Empty workspace
     elif [ "$workspace_command" == 'empty' ]; then
@@ -248,10 +292,18 @@ workspace_run() {
     elif [ -z "$workspace_command" ]; then
         workspace_list
 
+    elif [ "$workspace_command" == 'autocomplete' ]; then
+        if [ -z "$workspace_name" ]; then workspace_name=w; fi;
+        complete -F workspace_autocomplete "`workspace_escape $workspace_name`"
+
+    elif [ "$workspace_command" == '_func' ]; then
+        local func=`workspace_escape "$workspace_name"`
+        workspace_`eval echo $func`
+
     # Default
     else
         workspace_helptext
     fi
 }
 
-workspace_run $1 $2
+workspace_run "$1" "$2"
