@@ -11,7 +11,7 @@ _bws_args() {
 # Pass variables through:
 #   <cmd> `eval _bws_args <first_index> "$@"`
 # @param Index of first argument to pass through
-# @param Numer of first argument
+# @param List of parameters
     local i=0
     local min=$(( $1 + 1 ))
     for var in "$@"; do
