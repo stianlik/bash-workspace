@@ -24,7 +24,7 @@ Add the following to ~/.bashrc
 Usage
 -----
 
-If you type `w `, auto-complete will suggest all available commands.
+If you type `w ` and click tab twice auto-complete will suggest all available commands.
 
 ### Change workspace (it will be created if id doesn't already exist)
 
