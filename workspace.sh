@@ -1,4 +1,5 @@
 #!/bin/bash
+
 #
 # Author Stian Liknes <stianlik@gmail.com>
 # Created: 2011-08-10
