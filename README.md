@@ -17,9 +17,9 @@ This let you access your workspaces between sessions (in multiple terminals, etc
 Installation
 ------------
 
-1. Download workspace.sh and place it in /some/path/workspace.sh
+1. Download workspace.sh and place it in `/some/path/workspace.sh`
 
-2. Add the following to ~/.bashrc
+2. Add the following to `~/.bashrc`
 
         alias w='source /some/path/workspace.sh'
         w autocomplete # If you chose another alias, run <another_alias> autocomplete <another_alias>
