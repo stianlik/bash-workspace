@@ -224,7 +224,7 @@ workspace_autocomplete() {
         if [ "$prev" == "cd" ] || [ "$prev" == "rm" ]; then
             suggestions="`w _func list_link_names`"
         elif [ "$prev" == "cw" ]; then
-            suggestions="`w _func list` `w _func escape_current_basename`"
+            suggestions="`ls $workspace_dir/log` `w _func escape_current_basename`"
         elif [ "$prev" == "ln" ]; then
             suggestions="`w _func escape_current_basename`"
         fi
