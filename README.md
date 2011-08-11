@@ -80,4 +80,6 @@ Auto-complete will suggest links added using `bws ln`
 
 ### Get help
 
+For more information (including commands I didn't include here):
+
     bws help
