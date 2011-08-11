@@ -5,7 +5,10 @@
 # Created: 2011-08-10
 #
 
-export _bws_dir=~/.bash-workspace
+# Config
+
+_bws_dir=~/.bash-workspace
+_bws_alias="bws"
 
 _bws_args() {
 # Pass variables through:
@@ -182,17 +185,19 @@ _bws_list_commands() {
 
 _bws_helptext() {
 # @param Name of command
-    echo "Assuming $1 is an alias for \"source /path/to/workspace.sh\""
-    echo "Usage: $1                       List workspaces"
-    echo "   or: $1 cd [<name>]           Change directory, if <name> is omitted, go to \"r\" (workspace root)"
-    echo "   or: $1 cw [<name>]           Change workspace, if <name> is omitted, default workspace is activated"
-    echo "   or: $1 empty                 Empty active workspace (removing all links)"
-    echo "   or: $1 help                  Display this.."
-    echo "   or: $1 ln <name>             Add link to current directory in active workspace"
-    echo "   or: $1 lookup <name>         Lookup link (returns an absolute filepath)"
-    echo "   or: $1 ls                    List all directories in workspace"
-    echo "   or: $1 reset                 Remove all workspaces"
-    echo "   or: $1 rm [<list of names>]  Remove directories from workspace, or remove entire workspace if <list of names> is omitted"
+    echo "Usage: $1 [COMMAND]"
+    echo "If COMMAND is not specified, current workspaces are listed."
+    echo
+    echo "Available commands:"
+    echo "cd [<name>]           Change directory, if <name> is omitted, go to \"r\" (workspace root)"
+    echo "cw [<name>]           Change workspace, if <name> is omitted, default workspace is activated"
+    echo "empty                 Empty active workspace (removing all links)"
+    echo "help                  Display this.."
+    echo "ln <name>             Add link to current directory in active workspace"
+    echo "lookup <name>         Lookup link (returns an absolute filepath)"
+    echo "ls                    List all directories in workspace"
+    echo "reset                 Remove all workspaces"
+    echo "rm [<list of names>]  Remove directories from workspace, or remove entire workspace if <list of names> is omitted"
 }
 
 _bws_autocomplete() {
@@ -216,84 +221,81 @@ _bws_autocomplete() {
 }
 
 _bws_run() {
-# @param command
-# @param name
     _bws_init
 
-    local me="bws"
-    local _bws_command="$1"
-    local _bws_name="$2"
+    local command="$1"
 
     # Add
-    if [ "$_bws_command" == 'ln' ]; then
-        if [ -n "$_bws_name" ]; then
-            _bws_add_link `_bws_escape "$_bws_name"` "`pwd`"
+    if [ "$command" == 'ln' ]; then
+        if [ -n "$2" ]; then
+            _bws_add_link `_bws_escape "$2"` "`pwd`"
         else
-            _bws_helptext $me
+            _bws_helptext $_bws_alias
         fi
 
     # Remove
-    elif [ "$_bws_command" == 'rm' ]; then
-        if [ -n "$_bws_name" ]; then
+    elif [ "$command" == 'rm' ]; then
+        if [ -n "$2" ]; then
             _bws_remove_links `eval _bws_args 2 "$@"`
         else
             _bws_confirm "Remove active workspace ($_bws_active)?" && _bws_remove
         fi
 
     # Lookup
-    elif [ "$_bws_command" == 'lookup' ]; then
-        echo `_bws_lookup "$_bws_name"`
+    elif [ "$command" == 'lookup' ]; then
+        echo `_bws_lookup "$2"`
 
     # Change directory
-    elif [ "$_bws_command" == 'cd' ]; then
-        if [ -n "$_bws_name" ]; then
-            cd "`_bws_lookup $_bws_name`"
+    elif [ "$command" == 'cd' ]; then
+        if [ -n "$2" ]; then
+            cd "`_bws_lookup $2`"
         else
             cd "`_bws_lookup r`"
         fi
 
     # Change workspace
-    elif [ "$_bws_command" == 'cw' ]; then
-        if [ -n "$_bws_name" ]; then
-            _bws_change `_bws_escape "$_bws_name"`
+    elif [ "$command" == 'cw' ]; then
+        if [ -n "$2" ]; then
+            _bws_change `_bws_escape "$2"`
         else
             _bws_change default
         fi
 
     # Reset (remove all workspaces)
-    elif [ "$_bws_command" == 'reset' ]; then
+    elif [ "$command" == 'reset' ]; then
         _bws_confirm "Remove all workspaces" && _bws_remove_all && _bws_activate "default"
 
     # Empty workspace
-    elif [ "$_bws_command" == 'empty' ]; then
+    elif [ "$command" == 'empty' ]; then
         _bws_confirm "Empty workspace ($_bws_active)?" && _bws_empty_active
 
     # List links
-    elif [ "$_bws_command" == 'ls' ]; then
+    elif [ "$command" == 'ls' ]; then
         _bws_list_links
 
     # Help
-    elif [ "$_bws_command" == 'help' ]; then
-        _bws_helptext $me
+    elif [ "$command" == 'help' ]; then
+        _bws_helptext $_bws_alias
 
     # List workspaces
-    elif [ -z "$_bws_command" ]; then
+    elif [ -z "$command" ]; then
         _bws_list
 
     # Autocomplete
-    elif [ "$_bws_command" == 'autocomplete' ]; then
-        if [ -z "$_bws_name" ]; then _bws_name=$me; fi;
-        complete -F _bws_autocomplete "$_bws_name"
+    elif [ "$command" == 'autocomplete' ]; then
+        if [ -n "$2" ]; then 
+            complete -F _bws_autocomplete "$2"
+        else
+            complete -F _bws_autocomplete $_bws_alias
+        fi;
 
     # Run workspace function directly
-    elif [ "$_bws_command" == '_call' ]; then
-        local call=_bws_`_bws_escape "$_bws_name"`
-        call="$call `eval _bws_args 3 "$@"`"
-        eval $call
+    elif [ "$command" == '_call' ]; then
+        eval "_bws_$2 `eval _bws_args 3 "$@"`"
 
     # Default
     else
-        _bws_helptext $me
+        _bws_helptext $_bws_alias
     fi
 }
 
