@@ -18,6 +18,7 @@ Installation
 ------------
 
 Add the following to ~/.bashrc
+
     alias w='source /home/stianlik/Prosjekter/bash-workspace/workspace.sh'
     w autocomplete # If you chose another alias, run <another_alias> autocomplete <another_alias>
 
