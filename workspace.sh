@@ -7,8 +7,8 @@
 
 # Config
 
-_bws_dir=~/.bash-workspace
-_bws_alias="bws"
+_BWS_DIR=~/.bash-workspace
+_BWS_ALIAS="bws"
 
 _bws_args() {
 # Pass variables through:
@@ -25,17 +25,17 @@ _bws_args() {
 
 _bws_init() {
     export _bws_active=default
-    mkdir $_bws_dir > /dev/null 2>&1
-    mkdir $_bws_dir/log> /dev/null 2>&1
+    mkdir $_BWS_DIR > /dev/null 2>&1
+    mkdir $_BWS_DIR/log> /dev/null 2>&1
     _bws_load
     _bws_remove_empty
 }
 
 _bws_load() { 
 # Load workspace from persistent storage
-    source $_bws_dir/active 2> /dev/null
+    source $_BWS_DIR/active 2> /dev/null
     unset ${!_bws_link_*}
-    source $_bws_dir/log/$_bws_active 2> /dev/null
+    source $_BWS_DIR/log/$_bws_active 2> /dev/null
     if [ $? == 1 ]; then
         if [ $_bws_active == 'default' ]; then
             _bws_add_link r "`echo ~`"
@@ -48,15 +48,15 @@ _bws_load() {
 
 _bws_save() {
 # Save workspace to persistent storage
-    export -p | grep _bws_link_ | sed -e 's/.*\?_bws_link_/export _bws_link_/g' > $_bws_dir/log/$_bws_active
+    export -p | grep _bws_link_ | sed -e 's/.*\?_bws_link_/export _bws_link_/g' > $_BWS_DIR/log/$_bws_active
 }
 
 _bws_remove_empty() {
 # Remove empty workspaces except default and active
-    for ws in `ls $_bws_dir/log`; do
-        local file_size=`du -b $_bws_dir/log/$ws | sed -e s/[^0-9]*//g`
+    for ws in `ls $_BWS_DIR/log`; do
+        local file_size=`du -b $_BWS_DIR/log/$ws | sed -e s/[^0-9]*//g`
         if [ $file_size -le 1 ] && [ "$ws" != "default" ] && [ "$ws" != $_bws_active ]; then
-            rm "$_bws_dir/log/$ws"
+            rm "$_BWS_DIR/log/$ws"
         fi;
     done;
 }
@@ -65,14 +65,14 @@ _bws_change() {
 # Change workspace
 # @param workspace
     _bws_save
-    echo "export _bws_active=$1" > $_bws_dir/active
+    echo "export _bws_active=$1" > $_BWS_DIR/active
     _bws_load
 }
 
 _bws_activate() {
 # Activate workspace
 # @param workspace
-    echo "export _bws_active=$1" > $_bws_dir/active
+    echo "export _bws_active=$1" > $_BWS_DIR/active
     _bws_load
 }
 
@@ -87,14 +87,14 @@ _bws_empty_active() {
 _bws_remove() {
 # Remove workspace
     unset ${!_bws_link_*}
-    rm $_bws_dir/log/$_bws_active
+    rm $_BWS_DIR/log/$_bws_active
     _bws_activate "default"
 }
 
 _bws_remove_all() {
 # Remove all workspaces
     unset ${!_bws_link_*}
-    rm $_bws_dir/log/*
+    rm $_BWS_DIR/log/*
     _bws_activate "default"
     _bws_save
 }
@@ -143,7 +143,7 @@ _bws_list() {
 # List workspaces
     local s="[" #local s="\033[40m\033[1;34m"
     local e="]" #local e="\033[0m"
-    for ws in `ls $_bws_dir/log`; do
+    for ws in `ls $_BWS_DIR/log`; do
         if [ "$ws" == $_bws_active ]; then
             echo -n -e "${s}$ws${e} "
         else
@@ -212,7 +212,7 @@ _bws_autocomplete() {
         if [ "$prev" == "cd" ] || [ "$prev" == "rm" ]; then
             suggestions="`_bws_list_link_names`"
         elif [ "$prev" == "cw" ]; then
-            suggestions="`ls $_bws_dir/log` `_bws_escape_current_basename`"
+            suggestions="`ls $_BWS_DIR/log` `_bws_escape_current_basename`"
         elif [ "$prev" == "ln" ]; then
             suggestions="`_bws_escape_current_basename`"
         fi
@@ -230,7 +230,7 @@ _bws_run() {
         if [ -n "$2" ]; then
             _bws_add_link `_bws_escape "$2"` "`pwd`"
         else
-            _bws_helptext $_bws_alias
+            _bws_helptext $_BWS_ALIAS
         fi
 
     # Remove
@@ -275,7 +275,7 @@ _bws_run() {
 
     # Help
     elif [ "$command" == 'help' ]; then
-        _bws_helptext $_bws_alias
+        _bws_helptext $_BWS_ALIAS
 
     # List workspaces
     elif [ -z "$command" ]; then
@@ -286,7 +286,7 @@ _bws_run() {
         if [ -n "$2" ]; then 
             complete -F _bws_autocomplete "$2"
         else
-            complete -F _bws_autocomplete $_bws_alias
+            complete -F _bws_autocomplete $_BWS_ALIAS
         fi;
 
     # Run workspace function directly
@@ -295,7 +295,7 @@ _bws_run() {
 
     # Default
     else
-        _bws_helptext $_bws_alias
+        _bws_helptext $_BWS_ALIAS
     fi
 }
 
