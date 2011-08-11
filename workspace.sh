@@ -12,7 +12,7 @@ _bws_args() {
 #   <cmd> `eval _bws_args <first_index> "$@"`
 # @param Index of first argument to pass through
 # @param List of parameters
-    local i=0
+    local i=1
     local min=$(( $1 + 1 ))
     for var in "$@"; do
         i=$(( $i + 1 ))
@@ -125,15 +125,15 @@ _bws_remove_links() {
     _bws_save
 }
 
-_bws_change_directory() {
+_bws_lookup() {
+# Get directory path that link poins to
 # @param Link name
-    local _bws_path=_bws_link_$1;
-    _bws_path=${!_bws_path}
-    if [ -n "$_bws_path" ]; then
-        cd $_bws_path
-        return 0
+    local path=_bws_link_$1;
+    path=${!path}
+    if [ -z "$path" ]; then
+        return 1
     fi
-    return 1
+    echo $path
 }
 
 _bws_list() {
@@ -177,7 +177,7 @@ _bws_confirm() {
 }
 
 _bws_list_commands() {
-    echo "cd cw empty help ln ls reset rm"
+    echo "cd cw empty help ln lookup ls reset rm"
 }
 
 _bws_helptext() {
@@ -189,6 +189,7 @@ _bws_helptext() {
     echo "   or: $1 empty                 Empty active workspace (removing all links)"
     echo "   or: $1 help                  Display this.."
     echo "   or: $1 ln <name>             Add link to current directory in active workspace"
+    echo "   or: $1 lookup <name>         Lookup link (returns an absolute filepath)"
     echo "   or: $1 ls                    List all directories in workspace"
     echo "   or: $1 reset                 Remove all workspaces"
     echo "   or: $1 rm [<list of names>]  Remove directories from workspace, or remove entire workspace if <list of names> is omitted"
@@ -234,17 +235,21 @@ _bws_run() {
     # Remove
     elif [ "$_bws_command" == 'rm' ]; then
         if [ -n "$_bws_name" ]; then
-            _bws_remove_links `eval _bws_args 1 "$@"`
+            _bws_remove_links `eval _bws_args 2 "$@"`
         else
             _bws_confirm "Remove active workspace ($_bws_active)?" && _bws_remove
         fi
 
+    # Lookup
+    elif [ "$_bws_command" == 'lookup' ]; then
+        echo `_bws_lookup "$_bws_name"`
+
     # Change directory
     elif [ "$_bws_command" == 'cd' ]; then
         if [ -n "$_bws_name" ]; then
-            _bws_change_directory "$_bws_name" || echo "Could not find any links named $_bws_name"
+            cd "`_bws_lookup $_bws_name`"
         else
-            _bws_change_directory r || echo "Could not find any links named r"
+            cd "`_bws_lookup r`"
         fi
 
     # Change workspace
@@ -281,9 +286,10 @@ _bws_run() {
         complete -F _bws_autocomplete "$_bws_name"
 
     # Run workspace function directly
-    elif [ "$_bws_command" == '_func' ]; then
-        local func=`_bws_escape "$_bws_name"`
-        _bws_`eval echo $func`
+    elif [ "$_bws_command" == '_call' ]; then
+        local call=_bws_`_bws_escape "$_bws_name"`
+        call="$call `eval _bws_args 3 "$@"`"
+        eval $call
 
     # Default
     else
