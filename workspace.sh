@@ -199,17 +199,18 @@ workspace_list_commands() {
 }
 
 workspace_helptext() {
-    echo "Assuming w is an alias for \"source /path/to/workspace.sh\""
-    echo "Usage: w                       List workspaces"
-    echo "   or: w cd [<name>]           Change directory, if <name> is omitted, go to \"r\" (workspace root)"
-    echo "   or: w cw [<workspace_name>] Change workspace, if <workspace_name> is omitted, default workspace is activated"
-    echo "   or: w empty                 Empty active workspace (removing all links)"
-    echo "   or: w help                  Display this.."
-    echo "   or: w ln <name>             Add link to current directory in active workspace"
-    echo "   or: w ls                    List all directories in workspace"
-    echo "   or: w reset                 Remove all workspaces"
-    echo "   or: w rm [<name>]           Remove directory from workspace, or remove entire workspace if <name> is omitted"
-    echo "   or: w start                 Activate workspaces"
+# @param Name of command
+    echo "Assuming $1 is an alias for \"source /path/to/workspace.sh\""
+    echo "Usage: $1                       List workspaces"
+    echo "   or: $1 cd [<name>]           Change directory, if <name> is omitted, go to \"r\" (workspace root)"
+    echo "   or: $1 cw [<workspace_name>] Change workspace, if <workspace_name> is omitted, default workspace is activated"
+    echo "   or: $1 empty                 Empty active workspace (removing all links)"
+    echo "   or: $1 help                  Display this.."
+    echo "   or: $1 ln <name>             Add link to current directory in active workspace"
+    echo "   or: $1 ls                    List all directories in workspace"
+    echo "   or: $1 reset                 Remove all workspaces"
+    echo "   or: $1 rm [<name>]           Remove directory from workspace, or remove entire workspace if <name> is omitted"
+    echo "   or: $1 start                 Activate workspaces"
 }
 
 workspace_autocomplete() {
@@ -219,14 +220,14 @@ workspace_autocomplete() {
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
     if [ $COMP_CWORD -eq 1 ]; then
-        suggestions="`w _func list_commands`"
+        suggestions="`workspace_list_commands`"
     elif [ $COMP_CWORD -eq 2 ]; then
         if [ "$prev" == "cd" ] || [ "$prev" == "rm" ]; then
-            suggestions="`w _func list_link_names`"
+            suggestions="`workspace_list_link_names`"
         elif [ "$prev" == "cw" ]; then
-            suggestions="`ls $workspace_dir/log` `w _func escape_current_basename`"
+            suggestions="`ls $workspace_dir/log` `workspace_escape_current_basename`"
         elif [ "$prev" == "ln" ]; then
-            suggestions="`w _func escape_current_basename`"
+            suggestions="`workspace_escape_current_basename`"
         fi
     fi
     COMPREPLY=(`compgen -W "${suggestions}" $cur`)
@@ -237,6 +238,7 @@ workspace_run() {
 # @param name
     workspace_init
 
+    local me="bws"
     local workspace_command="$1"
     local workspace_name="$2"
 
@@ -245,7 +247,7 @@ workspace_run() {
         if [ -n "$workspace_name" ]; then
             workspace_add_link `workspace_escape "$workspace_name"` "`pwd`"
         else
-            workspace_helptext
+            workspace_helptext $me
         fi
 
     # Remove
@@ -286,15 +288,15 @@ workspace_run() {
 
     # Help
     elif [ "$workspace_command" == 'help' ]; then
-        workspace_helptext
+        workspace_helptext $me
 
     # List workspaces
     elif [ -z "$workspace_command" ]; then
         workspace_list
 
     elif [ "$workspace_command" == 'autocomplete' ]; then
-        if [ -z "$workspace_name" ]; then workspace_name=w; fi;
-        complete -F workspace_autocomplete "`workspace_escape $workspace_name`"
+        if [ -z "$workspace_name" ]; then workspace_name=$me; fi;
+        complete -F workspace_autocomplete "$workspace_name"
 
     elif [ "$workspace_command" == '_func' ]; then
         local func=`workspace_escape "$workspace_name"`
@@ -302,7 +304,7 @@ workspace_run() {
 
     # Default
     else
-        workspace_helptext
+        workspace_helptext $me
     fi
 }
 

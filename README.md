@@ -21,58 +21,58 @@ Installation
 
 2. Add the following to `~/.bashrc`
 
-        alias w='source /some/path/workspace.sh'
-        w autocomplete # If you chose another alias, run <another_alias> autocomplete <another_alias>
+        alias bws='source /some/path/workspace.sh'
+        bws autocomplete # If you chose another alias, run <another_alias> autocomplete <another_alias>
 
 Usage
 -----
 
-If you type `w ` and click tab twice auto-complete will suggest all available commands.
+If you type `bws ` and click tab twice auto-complete will suggest all available commands.
 
 ### Change workspace (it will be created if id doesn't already exist)
 
 Auto-complete will suggest available workspaces, including the 
 current directory name
 
-    w cw my_workspace
+    bws cw my_workspace
 
 ### Add link to current directory
 
 Auto-complete will suggest the current directory name
 
-    w ln some_link_name
+    bws ln some_link_name
 
 ### Move to workspace root
 
-    w cd
+    bws cd
 
 ### Move to linked folder
 
-Auto-complete will suggest links added using `w ln`
+Auto-complete will suggest links added using `bws ln`
     
-    w cd some_link_name
+    bws cd some_link_name
 
 ### Remove a shortcut from the active workspace 
 
-Auto-complete will suggest links added using `w ln`
+Auto-complete will suggest links added using `bws ln`
     
-    w rm <name>
+    bws rm <name>
 
 ### Clear the current workspace (i.e. delete all shortcuts for this workspace) 
     
-    w empty
+    bws empty
 
 ### Remove the current workspace 
     
-    w rm
+    bws rm
 
 ### Remove all workspaces and shortcuts 
 
-    w reset
+    bws reset
 
 ### List all shortcuts for the active workspace 
 
-    w list
+    bws list
 
 ### List all stored workspaces 
 
@@ -80,4 +80,4 @@ Auto-complete will suggest links added using `w ln`
 
 ### Get help
 
-    w help
+    bws help
