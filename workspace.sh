@@ -7,6 +7,19 @@
 
 export _bws_dir=~/.bash-workspace
 
+_bws_args() {
+# Pass variables through:
+#   <cmd> `eval _bws_args <first_index> "$@"`
+# @param Index of first argument to pass through
+# @param Numer of first argument
+    local i=0
+    local min=$(( $1 + 1 ))
+    for var in "$@"; do
+        i=$(( $i + 1 ))
+        if [ $i -gt $min ]; then echo $var; fi
+    done;
+}
+
 _bws_init() {
     export _bws_active=default
     mkdir $_bws_dir > /dev/null 2>&1
@@ -104,11 +117,12 @@ _bws_add_link() {
     _bws_save
 }
 
-_bws_remove_link() {
+_bws_remove_links() {
 # Remove link from active workspace
-# @param Link name
-    local _bws_cmd="unset _bws_link_$1"
-    eval $_bws_cmd
+# @param Link names
+    for var in $@; do
+        unset _bws_link_$var
+    done;
     _bws_save
 }
 
@@ -215,7 +229,7 @@ _bws_helptext() {
     echo "   or: $1 ln <name>             Add link to current directory in active workspace"
     echo "   or: $1 ls                    List all directories in workspace"
     echo "   or: $1 reset                 Remove all workspaces"
-    echo "   or: $1 rm [<name>]           Remove directory from workspace, or remove entire workspace if <name> is omitted"
+    echo "   or: $1 rm [<list of names>]  Remove directories from workspace, or remove entire workspace if <list of names> is omitted"
 }
 
 _bws_autocomplete() {
@@ -258,7 +272,7 @@ _bws_run() {
     # Remove
     elif [ "$_bws_command" == 'rm' ]; then
         if [ -n "$_bws_name" ]; then
-            _bws_remove_link `_bws_escape "$_bws_name"`
+            _bws_remove_links `eval _bws_args 1 "$@"`
         else
             _bws_remove_confirm
         fi
@@ -315,4 +329,4 @@ _bws_run() {
     fi
 }
 
-_bws_run "$1" "$2"
+_bws_run "$@"
