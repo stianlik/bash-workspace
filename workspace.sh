@@ -263,7 +263,7 @@ _bws_run() {
 
     # Reset (remove all workspaces)
     elif [ "$command" == 'reset' ]; then
-        _bws_confirm "Remove all workspaces" && _bws_remove_all && _bws_activate "default"
+        _bws_confirm "Remove all workspaces?" && _bws_remove_all && _bws_activate "default"
 
     # Empty workspace
     elif [ "$command" == 'empty' ]; then
