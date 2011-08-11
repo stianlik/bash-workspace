@@ -294,10 +294,12 @@ workspace_run() {
     elif [ -z "$workspace_command" ]; then
         workspace_list
 
+    # Autocomplete
     elif [ "$workspace_command" == 'autocomplete' ]; then
         if [ -z "$workspace_name" ]; then workspace_name=$me; fi;
         complete -F workspace_autocomplete "$workspace_name"
 
+    # Run workspace function directly
     elif [ "$workspace_command" == '_func' ]; then
         local func=`workspace_escape "$workspace_name"`
         workspace_`eval echo $func`
