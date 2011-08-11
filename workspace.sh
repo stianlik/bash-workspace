@@ -4,23 +4,21 @@
 # Created: 2011-08-10
 #
 
-workspace_dir=~/.bash-workspace
+export workspace_dir=~/.bash-workspace
+export workspace_active=default
 
-mkdir $workspace_dir > /dev/null 2>&1
-mkdir $workspace_dir/log> /dev/null 2>&1
-
-workspace_command=$1
-workspace_name=$2
-
-source $workspace_dir/current 2> /dev/null
-if [ -z "$workspace_log" ]; then
-    workspace_log=default
-fi;
+workspace_init() {
+    mkdir $workspace_dir > /dev/null 2>&1
+    mkdir $workspace_dir/log> /dev/null 2>&1
+    workspace_load
+    workspace_remove_empty
+}
 
 workspace_load() { 
 # Load workspace from persistent storage
+    source $workspace_dir/active 2> /dev/null
     unset ${!workspace_link_*}
-    source $workspace_dir/log/$workspace_log 2> /dev/null
+    source $workspace_dir/log/$workspace_active 2> /dev/null
     if [ $? == 1 ]; then
         workspace_save
     fi
@@ -28,27 +26,35 @@ workspace_load() {
 
 workspace_save() {
 # Save workspace to persistent storage
-    echo `export -p | grep workspace_link_ | sed -e 's/.*\?workspace_link_/export workspace_link_/g'` > $workspace_dir/log/$workspace_log
+    echo `export -p | grep workspace_link_ | sed -e 's/.*\?workspace_link_/export workspace_link_/g'`>$workspace_dir/log/$workspace_active
+}
+
+workspace_remove_empty() {
+# Remove empty workspaces except default and active
+    for ws in `ls $workspace_dir/log`; do
+        local file_size=`du -b $workspace_dir/log/$ws | sed -e s/[^0-9]*//g`
+        if [ $file_size -le 1 ] && [ "$ws" != "default" ] && [ "$ws" != $workspace_active ]; then
+            rm "$workspace_dir/log/$ws"
+        fi;
+    done;
 }
 
 workspace_change() {
 # Change workspace
 # @param workspace
     workspace_save
-    export workspace_log=$1
+    echo "export workspace_active=$1" > $workspace_dir/active
     workspace_load
-    echo "export workspace_log=$workspace_log" > $workspace_dir/current
 }
 
 workspace_activate() {
 # Activate workspace
 # @param workspace
-    export workspace_log=$1
+    echo "export workspace_active=$1" > $workspace_dir/active
     workspace_load
-    echo "export workspace_log=$workspace_log" > $workspace_dir/current
 }
 
-workspace_empty_current() {
+workspace_empty_active() {
 # Empty the current workspace
     unset ${!workspace_link_*}
     workspace_save
@@ -57,7 +63,7 @@ workspace_empty_current() {
 workspace_remove() {
 # Remove workspace
     unset ${!workspace_link_*}
-    rm $workspace_dir/log/$workspace_log
+    rm $workspace_dir/log/$workspace_active
     workspace_activate "default"
 }
 
@@ -102,7 +108,7 @@ workspace_list() {
     local s="[" #local s="\033[40m\033[1;34m"
     local e="]" #local e="\033[0m"
     for ws in `ls $workspace_dir/log`; do
-        if [ "$ws" == $workspace_log ]; then
+        if [ "$ws" == $workspace_active ]; then
             echo -n -e "${s}$ws${e} "
         else
             echo -n -e "$ws "
@@ -132,7 +138,7 @@ workspace_confirm() {
 }
 
 workspace_remove_confirm() {
-    workspace_confirm "Remove current workspace ($workspace_log)"
+    workspace_confirm "Remove active workspace ($workspace_active)"
     if [ $? == 1 ]; then
         echo "Nothing done"
         return
@@ -158,15 +164,14 @@ workspace_change_directory_confirm() {
     fi
 }
 
-workspace_empty_current_confirm() { 
-# Empty the current workspace (removing all links)
-    workspace_confirm "Empty workspace ($workspace_log)"
+workspace_empty_active_confirm() { 
+# Empty the active workspace (removing all links)
+    workspace_confirm "Empty workspace ($workspace_active)"
     if [ $? == 1 ]; then
         echo "Nothing done"
         return
     fi
-    workspace_empty_current
-    echo "Workspace ($workspace_log) cleared"
+    workspace_empty_active
 }
 
 workspace_helptext() {
@@ -175,7 +180,7 @@ workspace_helptext() {
     echo "   or: w cw [<workspace_name>] Change workspace, if <workspace_name> is omitted, default workspace is activated"
     echo "   or: w ln <name>             Add link to current directory in active workspace"
     echo "   or: w rm [<name>]           Remove directory from workspace, or remove entire workspace if <name> is omitted"
-    echo "   or: w empty                 Empty current workspace (removing all links)"
+    echo "   or: w empty                 Empty active workspace (removing all links)"
     echo "   or: w reset                 Remove all workspaces"
     echo "   or: w cd <name>             Change directory"
     echo "   or: w ls                    List all directories in workspace"
@@ -183,7 +188,12 @@ workspace_helptext() {
 }
 
 workspace_run() {
-    workspace_load
+# @param command
+# @param name
+    workspace_init
+
+    local workspace_command=$1
+    local workspace_name=$2
 
     # Add
     if [ "$workspace_command" == 'ln' ]; then
@@ -223,7 +233,7 @@ workspace_run() {
 
     # Empty workspace
     elif [ "$workspace_command" == 'empty' ]; then
-        workspace_empty_current_confirm
+        workspace_empty_active_confirm
 
     # List links
     elif [ "$workspace_command" == 'ls' ]; then
@@ -243,4 +253,4 @@ workspace_run() {
     fi
 }
 
-workspace_run
+workspace_run $1 $2
