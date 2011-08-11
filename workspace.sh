@@ -209,7 +209,7 @@ _bws_helptext() {
     echo "Assuming $1 is an alias for \"source /path/to/workspace.sh\""
     echo "Usage: $1                       List workspaces"
     echo "   or: $1 cd [<name>]           Change directory, if <name> is omitted, go to \"r\" (workspace root)"
-    echo "   or: $1 cw [<_bws_name>] Change workspace, if <_bws_name> is omitted, default workspace is activated"
+    echo "   or: $1 cw [<name>]           Change workspace, if <name> is omitted, default workspace is activated"
     echo "   or: $1 empty                 Empty active workspace (removing all links)"
     echo "   or: $1 help                  Display this.."
     echo "   or: $1 ln <name>             Add link to current directory in active workspace"
