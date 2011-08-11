@@ -109,7 +109,7 @@ workspace_remove_link() {
 workspace_change_directory() {
 # @param Link name
     local workspace_path=workspace_link_$1;
-    local workspace_path=${!workspace_path}
+    workspace_path=${!workspace_path}
     if [ -n "$workspace_path" ]; then
         cd $workspace_path
         return 0
