@@ -112,8 +112,7 @@ _bws_add_link() {
 # Add link to active workspace
 # @param Link name
 # @param Target directory
-    _bws_cmd="export _bws_link_$1='$2'"
-    eval $_bws_cmd
+    export _bws_link_$1="$2"
     _bws_save
 }
 
@@ -167,7 +166,7 @@ _bws_confirm() {
 # @param message
 # @return 0 if user answered yes, 1 otherwise
     message=$1
-    echo -n "$message (Yes/No)? "
+    echo -n "$message Yes/No "
     read action_confirmed
     local action_confirmed=`echo $action_confirmed | tr '[:upper:]' '[:lower:]'`
     if [ "$action_confirmed" == "yes" ] || [ "$action_confirmed" == "y" ]; then
@@ -175,43 +174,6 @@ _bws_confirm() {
     else
         return 1
     fi
-}
-
-_bws_remove_confirm() {
-    _bws_confirm "Remove active workspace ($_bws_active)"
-    if [ $? == 1 ]; then
-        echo "Nothing done"
-        return
-    fi
-    _bws_remove
-}
-
-_bws_remove_all_confirm() {
-    _bws_confirm "Remove all workspaces"
-    if [ $? == 1 ]; then
-        echo "Nothing done"
-        return
-    fi
-    _bws_remove_all
-    _bws_activate "default"
-}
-
-_bws_change_directory_confirm() {
-# @param Link name
-    _bws_change_directory $1
-    if [ $? == 1 ]; then
-        echo "Could not find link ('$1')"
-    fi
-}
-
-_bws_empty_active_confirm() { 
-# Empty the active workspace (removing all links)
-    _bws_confirm "Empty workspace ($_bws_active)"
-    if [ $? == 1 ]; then
-        echo "Nothing done"
-        return
-    fi
-    _bws_empty_active
 }
 
 _bws_list_commands() {
@@ -274,15 +236,15 @@ _bws_run() {
         if [ -n "$_bws_name" ]; then
             _bws_remove_links `eval _bws_args 1 "$@"`
         else
-            _bws_remove_confirm
+            _bws_confirm "Remove active workspace ($_bws_active)?" && _bws_remove
         fi
 
     # Change directory
     elif [ "$_bws_command" == 'cd' ]; then
         if [ -n "$_bws_name" ]; then
-            _bws_change_directory_confirm `_bws_escape "$_bws_name"`
+            _bws_change_directory "$_bws_name" || echo "Could not find any links named $_bws_name"
         else
-            _bws_change_directory_confirm r # Workspace root dir
+            _bws_change_directory r || echo "Could not find any links named r"
         fi
 
     # Change workspace
@@ -295,11 +257,11 @@ _bws_run() {
 
     # Reset (remove all workspaces)
     elif [ "$_bws_command" == 'reset' ]; then
-        _bws_remove_all_confirm `_bws_escape "$_bws_name"`
+        _bws_confirm "Remove all workspaces" && _bws_remove_all && _bws_activate "default"
 
     # Empty workspace
     elif [ "$_bws_command" == 'empty' ]; then
-        _bws_empty_active_confirm
+        _bws_confirm "Empty workspace ($_bws_active)?" && _bws_empty_active
 
     # List links
     elif [ "$_bws_command" == 'ls' ]; then
