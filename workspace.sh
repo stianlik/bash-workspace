@@ -5,9 +5,9 @@
 #
 
 export workspace_dir=~/.bash-workspace
-export workspace_active=default
 
 workspace_init() {
+    export workspace_active=default
     mkdir $workspace_dir > /dev/null 2>&1
     mkdir $workspace_dir/log> /dev/null 2>&1
     workspace_load
