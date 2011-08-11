@@ -32,7 +32,7 @@ _bws_load() {
 
 _bws_save() {
 # Save workspace to persistent storage
-    echo `export -p | grep _bws_link_ | sed -e 's/.*\?_bws_link_/export _bws_link_/g'`>$_bws_dir/log/$_bws_active
+    export -p | grep _bws_link_ | sed -e 's/.*\?_bws_link_/export _bws_link_/g' > $_bws_dir/log/$_bws_active
 }
 
 _bws_remove_empty() {
