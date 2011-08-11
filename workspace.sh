@@ -64,7 +64,7 @@ _bws_activate_workspace() {
     _bws_load_workspace
 }
 
-bws_empty_workspace() {
+_bws_empty_workspace() {
     local root="$_bws_link_r"
     unset ${!_bws_link_*}
     export _bws_link_r="$root"
@@ -171,32 +171,37 @@ _bws_helptext() {
     echo "If COMMAND is not specified, current workspaces are listed."
     echo
     echo "Available commands:"
-    echo "cd [<name>]           Change directory, if <name> is omitted, go to \"r\" (workspace root)"
-    echo "cw [<name>]           Change workspace, if <name> is omitted, default workspace is activated"
+    echo "cd [NAME]             Change directory, if NAME is omitted, go to \"r\" (workspace root)"
+    echo "cw [NAME]             Change workspace, if NAME is omitted, default workspace is activated"
     echo "empty                 Empty active workspace (removing all links)"
     echo "help                  Display this.."
-    echo "ln <name>             Add link to current directory in active workspace"
-    echo "lookup <name>         Lookup link (returns an absolute filepath)"
+    echo "ln NAME [DIRECTORY]   Add link to DIRECTORY, or to current working directory if not specified"
+    echo "lookup NAME           Lookup link (returns an absolute filepath)"
     echo "ls                    List all directories in workspace"
     echo "reset                 Remove all workspaces"
-    echo "rm [<list of names>]  Remove directories from workspace, or remove entire workspace if <list of names> is omitted"
+    echo "rm [NAME]...          Remove directories from workspace, or remove entire workspace if no names are specified"
 }
 
 _bws_autocomplete() {
-    local cur prev suggestions
+    local cur suggestions cmd
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    cmd="${COMP_WORDS[1]}"
 
     if [ $COMP_CWORD -eq 1 ]; then
         suggestions="`_bws_list_commands`"
     elif [ $COMP_CWORD -eq 2 ]; then
-        if [ "$prev" == "cd" ] || [ "$prev" == "rm" ]; then
+        if [ "$cmd" == "cd" ] || [ "$cmd" == "rm" ]; then
             suggestions="`_bws_list_link_names`"
-        elif [ "$prev" == "cw" ]; then
+        elif [ "$cmd" == "cw" ]; then
             suggestions="`ls $_BWS_DIR/log` `_bws_escape_current_basename`"
-        elif [ "$prev" == "ln" ]; then
+        elif [ "$cmd" == "ln" ]; then
             suggestions="`_bws_escape_current_basename`"
+        fi
+    elif [ $COMP_CWORD -eq 3 ]; then
+        suggestions="`ls`"
+        if [ "$cmd" == "ln" ] ; then
+            suggestions="`ls`"
         fi
     fi
     COMPREPLY=(`compgen -W "${suggestions}" $cur`)
@@ -210,6 +215,8 @@ _bws_run() {
     # Add
     if [ "$command" == 'ln' ]; then
         if [ -n "$2" ]; then
+            local dir=`pwd`
+            if [ -z "$3" ]; then dir=$3; fi;
             _bws_add_link `_bws_escape "$2"` "`pwd`"
         else
             _bws_helptext $_BWS_ALIAS
@@ -249,7 +256,7 @@ _bws_run() {
 
     # Empty workspace
     elif [ "$command" == 'empty' ]; then
-        _bws_confirm "Empty workspace ($_bws_active)?" && bws_empty_workspace
+        _bws_confirm "Empty workspace ($_bws_active)?" && _bws_empty_workspace
 
     # List links
     elif [ "$command" == 'ls' ]; then
