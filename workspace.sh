@@ -216,8 +216,8 @@ _bws_run() {
     if [ "$command" == 'ln' ]; then
         if [ -n "$2" ]; then
             local dir=`pwd`
-            if [ -z "$3" ]; then dir=$3; fi;
-            _bws_add_link `_bws_escape "$2"` "`pwd`"
+            if [ -n "$3" ]; then dir="$3"; fi
+            _bws_add_link `_bws_escape "$2"` $dir
         else
             _bws_helptext $_BWS_ALIAS
         fi
