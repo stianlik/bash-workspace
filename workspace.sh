@@ -43,7 +43,7 @@ _bws_save_workspace() {
 }
 
 _bws_export_workspace_to_vim() {
-    export -p | grep _bws_link_ | sed -e 's/.*\?_bws_link_/let _bws_link_/g' > $_BWS_DIR/vim
+    export -p | grep _bws_link_ | sed -e 's/.*\?_bws_link_/let g:_bws_link_/g' > $_BWS_DIR/vim
 }
 
 _bws_remove_empty_workspaces() {
