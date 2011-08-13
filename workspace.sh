@@ -42,6 +42,11 @@ _bws_save_workspace() {
     export -p | grep _bws_link_ | sed -e 's/.*\?_bws_link_/export _bws_link_/g' > $_BWS_DIR/log/$_bws_active
 }
 
+_bws_export_workspace_to_vim() {
+    mkdir $_BWS_DIR/vim 2> /dev/null
+    export -p | grep _bws_link_ | sed -e 's/.*\?_bws_link_/let _bws_link_/g' > $_BWS_DIR/vim/$_bws_active
+}
+
 _bws_remove_empty_workspaces() {
     for ws in `ls $_BWS_DIR/log`; do
         local file_size=`du -b $_BWS_DIR/log/$ws | sed -e s/[^0-9]*//g`
@@ -199,7 +204,6 @@ _bws_autocomplete() {
             suggestions="`_bws_escape_current_basename`"
         fi
     elif [ $COMP_CWORD -eq 3 ]; then
-        suggestions="`ls`"
         if [ "$cmd" == "ln" ] ; then
             suggestions="`ls`"
         fi
