@@ -2,6 +2,7 @@
 
 _BWS_DIR=~/.bash-workspace
 _BWS_ALIAS="bws"
+_DU_CMD="du"
 
 _bws_args() {
 # Pass variables through:
@@ -20,11 +21,19 @@ _bws_init() {
     export _bws_active=default
     mkdir $_BWS_DIR > /dev/null 2>&1
     mkdir $_BWS_DIR/log> /dev/null 2>&1
+
+    which gdu &> /dev/null
+
+    if [ $? -eq 0 ]
+    then
+      _DU_CMD="gdu"
+    fi
+
     _bws_load_workspace
     _bws_remove_empty_workspaces
 }
 
-_bws_load_workspace() { 
+_bws_load_workspace() {
     source $_BWS_DIR/active 2> /dev/null
     unset ${!_bws_link_*}
     source $_BWS_DIR/log/$_bws_active 2> /dev/null
@@ -48,7 +57,7 @@ _bws_export_workspace_to_vim() {
 
 _bws_remove_empty_workspaces() {
     for ws in `ls $_BWS_DIR/log`; do
-        local file_size=`du -b $_BWS_DIR/log/$ws | sed -e s/[^0-9]*//g`
+        local file_size=`$_DU_CMD -b $_BWS_DIR/log/$ws | sed -e s/[^0-9]*//g`
         if [ $file_size -le 1 ] && [ "$ws" != "default" ] && [ "$ws" != $_bws_active ]; then
             rm "$_BWS_DIR/log/$ws"
         fi;
@@ -275,7 +284,7 @@ _bws_run() {
 
     # Autocomplete
     elif [ "$command" == 'autocomplete' ]; then
-        if [ -n "$2" ]; then 
+        if [ -n "$2" ]; then
             complete -F _bws_autocomplete "$2"
         else
             complete -F _bws_autocomplete $_BWS_ALIAS
