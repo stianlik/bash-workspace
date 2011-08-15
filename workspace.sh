@@ -89,11 +89,14 @@ _bws_activate_workspace() {
 }
 
 _bws_rebase_workspace() {
-    local prefix=`pwd`
-    for var in ${!_bws_link*}; do
-        local var_value="`echo ${!var} | sed -e "s#^$_bws_link_r#$prefix#g" | sed -e 's#//#/#g'`"
-        echo "export $var=$var_value"
+    local new_root="`pwd`"
+    for var_name in ${!_bws_link*}; do
+        local var_value="`echo "${!var_name}" | sed -e "s#^$_bws_link_r#$new_root#g" | sed -e 's#//#/#g'`"
+        export `echo $var_name`="$var_value"
     done;
+    export _bws_link_r="$new_root"
+    _bws_list_links
+    _bws_save_workspace
 }
 
 _bws_empty_workspace() {
@@ -194,7 +197,7 @@ _bws_confirm() {
 }
 
 _bws_list_commands() {
-    echo "cd cw empty help ln lookup ls reset rm"
+    echo "cd cw empty help ln lookup ls rebase reset rm"
 }
 
 _bws_helptext() {
@@ -210,6 +213,7 @@ _bws_helptext() {
     echo "ln NAME [DIRECTORY]   Add link to DIRECTORY, or to current working directory if not specified"
     echo "lookup NAME           Lookup link (returns an absolute filepath)"
     echo "ls                    List all directories in workspace"
+    echo "rebase                Rebase the workspace (i.e. change \"r\" to current directory, and replace workspace prefix for all links)"
     echo "reset                 Remove all workspaces"
     echo "rm [NAME]...          Remove directories from workspace, or remove entire workspace if no names are specified"
 }
@@ -248,7 +252,7 @@ _bws_run() {
         if [ -n "$2" ]; then
             local dir=`pwd`
             if [ -n "$3" ]; then dir="$3"; fi
-            _bws_add_link `_bws_escape "$2"` $dir
+            _bws_add_link `_bws_escape "$2"` "$dir"
         else
             _bws_helptext $_BWS_ALIAS
         fi
@@ -280,6 +284,10 @@ _bws_run() {
         else
             _bws_change_workspace default
         fi
+
+    # Rebase
+    elif [ "$command" == 'rebase' ]; then
+        _bws_confirm "Rebase workspace?" && _bws_rebase_workspace
 
     # Reset (remove all workspaces)
     elif [ "$command" == 'reset' ]; then
