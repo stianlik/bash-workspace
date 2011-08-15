@@ -22,6 +22,11 @@ _bws_init() {
     mkdir $_BWS_DIR > /dev/null 2>&1
     mkdir $_BWS_DIR/log> /dev/null 2>&1
 
+    _bws_load_workspace
+    _bws_remove_empty_workspaces
+}
+
+_bws_load_du_cmd() {
     which gdu &> /dev/null
 
     if [ $? -eq 0 ]
@@ -32,12 +37,9 @@ _bws_init() {
       if [ $? -ne 0 ]
       then
         echo "Error: The du installed on your system does not support the -b option."
-        exit 1
+        return 1
       fi
     fi
-
-    _bws_load_workspace
-    _bws_remove_empty_workspaces
 }
 
 _bws_load_workspace() {
@@ -63,6 +65,8 @@ _bws_export_workspace_to_vim() {
 }
 
 _bws_remove_empty_workspaces() {
+    _bws_load_du_cmd
+    if [ $? -ne 0 ]; then return 1; fi
     for ws in `ls $_BWS_DIR/log`; do
         local file_size=`$_DU_CMD -b $_BWS_DIR/log/$ws | sed -e s/[^0-9]*//g`
         if [ $file_size -le 1 ] && [ "$ws" != "default" ] && [ "$ws" != $_bws_active ]; then
