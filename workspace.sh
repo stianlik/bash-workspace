@@ -33,7 +33,7 @@ _bws_load_du_cmd() {
     then
       _DU_CMD="gdu"
     else
-      du -b &> /dev/null
+      du -b /dev/null &> /dev/null
       if [ $? -ne 0 ]
       then
         echo "Error: The du installed on your system does not support the -b option."
@@ -86,6 +86,14 @@ _bws_activate_workspace() {
 # @param workspace to be activated
     echo "export _bws_active=$1" > $_BWS_DIR/active
     _bws_load_workspace
+}
+
+_bws_rebase_workspace() {
+    local prefix=`pwd`
+    for var in ${!_bws_link*}; do
+        local var_value="`echo ${!var} | sed -e "s#^$_bws_link_r#$prefix#g" | sed -e 's#//#/#g'`"
+        echo "export $var=$var_value"
+    done;
 }
 
 _bws_empty_workspace() {
