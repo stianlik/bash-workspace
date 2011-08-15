@@ -95,7 +95,6 @@ _bws_rebase_workspace() {
         export `echo $var_name`="$var_value"
     done;
     export _bws_link_r="$new_root"
-    _bws_list_links
     _bws_save_workspace
 }
 
