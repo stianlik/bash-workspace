@@ -27,6 +27,13 @@ _bws_init() {
     if [ $? -eq 0 ]
     then
       _DU_CMD="gdu"
+    else
+      du -b &> /dev/null
+      if [ $? -ne 0 ]
+      then
+        echo "Error: The du installed on your system does not support the -b option."
+        exit 1
+      fi
     fi
 
     _bws_load_workspace
