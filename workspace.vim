@@ -11,4 +11,5 @@ function! Bws_cd(name)
         return
     endif
     cd `=g:{var_name}`
+    pwd
 endfunction
